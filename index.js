@@ -20,8 +20,7 @@ by 94, then uses the result as an index into the following table of 94
 characters: 
 */
 
-var xlatin1 = "+b(29e*j1VMEKLyC})8&m#~W>qxdRp0wkrUo[D7,XTcA\"lI"
-".v%{gJh4G\\-=O@5`_3i<?Z';FNQuY]szf$!BS/|t:Pn6^Ha";
+var xlat1 = "+b(29e*j1VMEKLyC})8&m#~W>qxdRp0wkrUo[D7,XTcA\"lI.v%{gJh4G\\-=O@5`_3i<?Z';FNQuY]szf$!BS/|t:Pn6^Ha";
 
 /*
 From Malbolge Specification: 
@@ -30,8 +29,7 @@ After the instruction is executed, 33 is subtracted from the instruction
 at C, and the result is used as an index in the table below.  The new
 character is then placed at C, and then C is incremented.
 */
-var xlatin2 = "5z]&gqtyfr$(we4{WP)H-Zn,[%\\3dL+Q;>U!pJS72FhOA1C"
-"B6v^=I_0/8|jsb9m<.TVac`uY*MK'X~xDl}REokN:#?G\"i@";
+var xlat2 = "5z]&gqtyfr$(we4{WP)H-Zn,[%\\3dL+Q;>U!pJS72FhOA1CB6v^=I_0/8|jsb9m<.TVac`uY*MK'X~xDl}REokN:#?G\"i@";
 
 //Node modules
 var program = require( 'commander' );
@@ -41,7 +39,7 @@ var fs = require( 'fs' );
 Parse command-line options
 */
 program.version( '0.0.1 ')
-    .option( '-s, --source', 'source file' )
+    .option( '-s, --source [source]', 'source file' )
     .parse( process.argv );
 
 /*
@@ -71,12 +69,6 @@ if ( !data ) {
 }
 
 /*
-This pointer is equivalent to the integer 'x' variable
-declared on line 50 of the original C implementation
-*/
-var pointer = 0;
-
-/*
 This is an integer variable that corresponds to the 'j' 
 variable declared on line 49 of the original C implementation
 */
@@ -88,27 +80,30 @@ variable declared on line 49 of the original C implementation
 */
 var index = 0;
 
-while (pointer < data.length) {
-    var currentChar = data[ pointer ],
+while (index < data.length - 2) {
+    /* 
+    Variable 'currentChar' is equivalent to the integer variable 
+    'x' declared on line 50 of the original C implementation.
+    */
+    var currentChar = data[ index ],
         asciiChar = currentChar.charCodeAt( 0 );
     if ( /\s/.test( currentChar) ) continue;
     if ( asciiChar < 127 && asciiChar > 32 ) {
-        var xlat1Index = xlat1[ ( asciiChar - 33 +  ) % 94 ];
+        var xlat1Index = xlat1[ ( ( asciiChar - 33 ) + index ) % 94 ];
         if ( 'ji*p</vo'.indexOf( xlat1Index ) === -1 ) {
             console.error( 'invalid character in source file\n' );
             process.exit( 1 );
         }
     }
-    if ( i === maxStackSize ) {
+    if ( index === maxStackSize ) {
         console.error( 'input file too long\n' );
         process.exit( 1 );
     }
-    stack[ index++ ] = pointer;
+    stack[ index++ ] = asciiChar;
 }
-
-while ( i < maxStackSize ) {
-    stack[i] = op( stack[ i - 1 ], stack[ i - 2 ] );
-    i++;
+while ( index < maxStackSize ) {
+    stack[ index ] = op( stack[ index - 1 ], stack[ index - 2 ] );
+    index++;
 }
 exec( stack );
 process.exit( 0 );
@@ -168,7 +163,7 @@ function exec( stack ) {
 
     while(true) {
         if ( stack[ c ] < 33 || stack[ c ] > 126 ) continue;
-        switch ( xlat1[ ( stack[ c ] - 33 + c ) % 94 ] ) {
+        switch ( xlat1[ ( ( stack[ c ] - 33 ) + c ) % 94 ] ) {
             case 'j': 
                 d = stack[ d ]; 
                 break;
@@ -176,7 +171,7 @@ function exec( stack ) {
                 c = stack[ d ];
                 break;
             case '*': 
-                a = stack[ d ] = stack[ a ] / 3 + stack[ d ] % 3 * 19683;
+                a = stack[ d ] = ( ( ( stack[ a ] / 3 ) + stack[ d ] ) % 3 ) * 19683;
                 break;
             case 'p': 
                 a = stack[ d ] = op( a, stack[ d ] );
@@ -221,8 +216,7 @@ function op( x, y ) {
     /*
     Variable declarations from line 144 in the original C implementation
     */
-    var i = 0, 
-        j;
+    var i = 0;
     /*
     Variable declaration from line 145-146 in the original C implementation
     */
@@ -242,9 +236,12 @@ function op( x, y ) {
         [ 8, 8, 7, 8, 8, 7, 5, 5, 4 ]
     ];
 
-    for (j = 0; j <5; j++ ) {
+    for (j = 0; j < p9.length; j++ ) {
         var p9j = p9[j];
-        i += o[ y / p9j % 9 ][ x / p9j % 9 ] * p9j;
+        //values need to be either rounded or floored.  trying rounded first.
+        var yVal = Math.floor(y / p9j);
+        var xVal = Math.floor(x / p9j);
+        i += o[ yVal % o.length ][ xVal % o.length  ] * p9j;
     }
     return i;
 }
