@@ -114,7 +114,6 @@ while ( index < maxStackSize ) {
     stack[ index ] = op( stack[ index - 1 ], stack[ index - 2 ] );
     index++;
 }
-console.log(stack)
 exec( stack );
 process.exit( 0 );
 
@@ -172,7 +171,9 @@ function exec( stack ) {
     var x;
     while(true) {
         if ( stack[ c ] < 33 || stack[ c ] > 126 ) continue;
-        switch ( xlat1[ ( ( stack[ c ] - 33 ) + c ) % 94 ] ) {
+        var instructionIndex = ( ( stack[ c ] - 33 ) + c ) % 94;
+        var instruction = xlat1[ ( ( stack[ c ] - 33 ) + c ) % 94 ];
+        switch (instruction) {
             case 'j': 
                 d = stack[ d ]; 
                 break;
@@ -191,7 +192,7 @@ function exec( stack ) {
                 as well as the 'putc' function macro, which wraps
                 values above 255.
                 */
-                //console.log(String.fromCharCode(a % 256));
+                process.stdout.write(String.fromCharCode(a % 256));
                 break;
             case '/':
                 a = process.stdin.read();
@@ -199,11 +200,11 @@ function exec( stack ) {
             case 'v':
                 return;
         }
-        stack[ c ] = xlat2[ stack[ c ] - 33 ];
-        if ( c === maxStackSize ) c = 0;
+        stack[ c ] = xlat2.charCodeAt( stack[ c ] - 33 );
+        if ( c === maxStackSize - 1 ) c = 0;
         else c++;
         
-        if ( d === maxStackSize ) d = 0;
+        if ( d === maxStackSize - 1 ) d = 0;
         else d++;
     }
 }
