@@ -184,7 +184,7 @@ function exec( stack ) {
                 console.log(String.fromCharCode(a % 256));
                 break;
             case '/':
-                a = process.stdin.readline();
+                a = process.stdin.read();
                 break;
             case 'v':
                 return;
