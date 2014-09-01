@@ -160,7 +160,6 @@ function exec( stack ) {
     Integer variable declaration from line 108 of original C implementation
     */
     var x;
-
     while(true) {
         if ( stack[ c ] < 33 || stack[ c ] > 126 ) continue;
         switch ( xlat1[ ( ( stack[ c ] - 33 ) + c ) % 94 ] ) {
@@ -170,8 +169,8 @@ function exec( stack ) {
             case 'i': 
                 c = stack[ d ];
                 break;
-            case '*': 
-                a = stack[ d ] = ( ( ( stack[ a ] / 3 ) + stack[ d ] ) % 3 ) * 19683;
+            case '*':
+                a = stack[ d ] = Math.floor( stack[ d ] / 3 ) + stack[ d ] % 3 * 19683;
                 break;
             case 'p': 
                 a = stack[ d ] = op( a, stack[ d ] );
@@ -180,7 +179,7 @@ function exec( stack ) {
                 console.log(a);
                 break;
             case '/':
-                a = x;
+                a = process.stdin.readline();
                 break;
             case 'v':
                 return;
