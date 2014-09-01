@@ -172,7 +172,7 @@ function exec( stack ) {
     while(true) {
         if ( stack[ c ] < 33 || stack[ c ] > 126 ) continue;
         var instructionIndex = ( ( stack[ c ] - 33 ) + c ) % 94;
-        var instruction = xlat1[ ( ( stack[ c ] - 33 ) + c ) % 94 ];
+        var instruction = xlat1[ instructionIndex ];
         switch (instruction) {
             case 'j': 
                 d = stack[ d ]; 
