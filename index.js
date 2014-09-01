@@ -80,16 +80,24 @@ variable declared on line 49 of the original C implementation
 */
 var index = 0;
 
-while (index < data.length - 2) {
+/*
+This is necessary because the interpretter needs to read
+the next character even if the currentChar is a whitespace
+character
+*/
+var charIndex = 0;
+
+while (charIndex < data.length) {
     /* 
     Variable 'currentChar' is equivalent to the integer variable 
     'x' declared on line 50 of the original C implementation.
     */
-    var currentChar = data[ index ],
-        asciiChar = currentChar.charCodeAt( 0 );
+    var currentChar = data[ charIndex ];
+    var asciiChar = currentChar.charCodeAt( 0 );
+    charIndex++;
     if ( /\s/.test( currentChar) ) continue;
     if ( asciiChar < 127 && asciiChar > 32 ) {
-        var xlat1Index = xlat1[ ( ( asciiChar - 33 ) + index ) % 94 ];
+        var xlat1Index = xlat1[ ( asciiChar - 33 + index ) % 94 ];
         if ( 'ji*p</vo'.indexOf( xlat1Index ) === -1 ) {
             console.error( 'invalid character in source file\n' );
             process.exit( 1 );
@@ -101,6 +109,7 @@ while (index < data.length - 2) {
     }
     stack[ index++ ] = asciiChar;
 }
+
 while ( index < maxStackSize ) {
     stack[ index ] = op( stack[ index - 1 ], stack[ index - 2 ] );
     index++;
@@ -162,7 +171,9 @@ function exec( stack ) {
     var x;
     while(true) {
         if ( stack[ c ] < 33 || stack[ c ] > 126 ) continue;
-        switch ( xlat1[ ( ( stack[ c ] - 33 ) + c ) % 94 ] ) {
+        var instructionIndex = ( ( stack[ c ] - 33 ) + c ) % 94;
+        var instruction = xlat1[ instructionIndex ];
+        switch (instruction) {
             case 'j': 
                 d = stack[ d ]; 
                 break;
@@ -181,7 +192,7 @@ function exec( stack ) {
                 as well as the 'putc' function macro, which wraps
                 values above 255.
                 */
-                console.log(String.fromCharCode(a % 256));
+                process.stdout.write(String.fromCharCode(a % 256));
                 break;
             case '/':
                 a = process.stdin.read();
@@ -189,11 +200,11 @@ function exec( stack ) {
             case 'v':
                 return;
         }
-        stack[ c ] = xlat2[ stack[ c ] - 33 ];
-        if ( c === maxStackSize ) c = 0;
+        stack[ c ] = xlat2.charCodeAt( stack[ c ] - 33 );
+        if ( c === maxStackSize - 1 ) c = 0;
         else c++;
         
-        if ( d === maxStackSize ) d = 0;
+        if ( d === maxStackSize - 1 ) d = 0;
         else d++;
     }
 }
@@ -239,7 +250,6 @@ function op( x, y ) {
         [ 7, 6, 8, 7, 6, 8, 4, 3, 5 ],
         [ 8, 8, 7, 8, 8, 7, 5, 5, 4 ]
     ];
-
     for (j = 0; j < p9.length; j++ ) {
         var p9j = p9[j];
         //values need to be either rounded or floored.  trying rounded first.
