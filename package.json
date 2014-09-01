@@ -11,10 +11,11 @@
     "url": "git@github.com:nstarke/lament-configuration.git"
   },
   "keywords": [
-    "Malbolge"
+    "Malbolge",
+    "Esoteric"
   ],
   "author": "Nicholas Starke",
-  "license": "LPGLv3",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/nstarke/lament-configuration/issues"
   },
