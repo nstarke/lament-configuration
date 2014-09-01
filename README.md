@@ -1,5 +1,5 @@
 # Lament Configuration
-## Node.js-based Malbolge interpretter
+## Node.js-based Malbolge interpreter
 
 This library is an implementation of the Malbolge specification in Javascript.  It has been successfully tested with the 'hello-world.mb' program as well as the '99 bottles' program.  
 
