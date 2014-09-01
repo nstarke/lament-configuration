@@ -176,7 +176,12 @@ function exec( stack ) {
                 a = stack[ d ] = op( a, stack[ d ] );
                 break;
             case '<':
-                console.log(a);
+                /*
+                The original implementation uses only ASCII characters
+                as well as the 'putc' function macro, which wraps
+                values above 255.
+                */
+                console.log(String.fromCharCode(a % 256));
                 break;
             case '/':
                 a = process.stdin.readline();
