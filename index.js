@@ -210,7 +210,9 @@ function exec( stack ) {
 }
 /*
 'op' function corresponds to function declaration in lines 139-162 
-in original C implementation.
+in original C implementation. This is what is referred to as the 
+'crazy' operation in various online documentations, although the 
+word 'crazy' does not appear once in the original specification
 
 From Malbolge Specification:
 ----------------------------
