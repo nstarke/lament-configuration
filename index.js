@@ -144,6 +144,23 @@ p
           0 | 1  0  0
        D  1 | 1  0  2
      trit 2 | 2  2  1
+
+...
+
+<
+  reads an ASCII value from the stdin and converts it to Trinary, then
+   stores it in A.  10 (line feed) is considered 'newline', and
+     2222222222t (59048 dec.) is EOF.
+
+/
+    converts the value in A to ASCII and writes it to stdout.  Writing
+    10 is a newline.
+
+v
+    indicates a full stop for the machine.
+
+o
+    does nothing, except increment C and D, as all other instructions do.
 */
 function exec( stack ) {
     /* 
@@ -188,6 +205,11 @@ function exec( stack ) {
                 break;
             case '<':
                 /*
+                The original specification declares '>' to be the instruction,
+                however, whether by design or mistake, the original specification
+                uses '<'.  This implementation follows the original implementation
+                so that previously written programs may run under this implementation.
+
                 The original implementation uses only ASCII characters
                 as well as the 'putc' function macro, which wraps
                 values above 255.
